@@ -11,7 +11,7 @@ function input(value,field,label,max){
   if(max)node.maxLength=max;return node;
 }
 function matrix(){
-  $('matrix-head').replaceChildren();$('matrix-body').replaceChildren();
+  $('matrix-head').replaceChildren();$('matrix-body').replaceChildren();$('matrix').dataset.options=project.options.length;
   const header=el('tr');header.append(el('th','','Criterion'),el('th','','Weight'));
   project.options.forEach((option,i)=>{
     const th=el('th');th.scope='col';th.dataset.option=option.id;
@@ -50,7 +50,7 @@ function fillResults(result,verdictTarget,rangesTarget){
   const verdict=el('div','verdict');verdict.append(el('span','status',status),el('h3','',heading),el('p','',leader?'Its lower bound is above every other upper bound. This conclusion depends on the entered ratings and weights.':'Resolve unknown ratings or revisit the weights. The app does not fill gaps with guessed scores.'));
   verdictTarget.replaceChildren(verdict);rangesTarget.replaceChildren();
   for(const option of result.options){
-    const card=el('div','range-card');const head=el('div','range-head');head.append(el('h3','',option.name),el('strong','',Math.abs(option.upper-option.lower)<1e-9?pct(option.lower):pct(option.lower)+'–'+pct(option.upper)));card.append(head,rangeBar(option));
+    const card=el('div','range-card');const head=el('div','range-head');head.append(el('h3','',option.name),el('strong','',(Math.abs(option.upper-option.lower)<1e-9?pct(option.lower):pct(option.lower)+'–'+pct(option.upper))+' / 100'));card.append(head,rangeBar(option));
     const meta=el('div','range-meta');meta.append(el('span','',pct(option.coverage)+'% weighted coverage'),el('span',option.canLead?'could':'',option.canLead?'Could lead':'Below another lower bound'));card.append(meta);rangesTarget.append(card);
   }
 }
@@ -78,7 +78,7 @@ function render(){
   }
 }
 function changed(){revision++;if(render())message('Scorecard updated. Save a project to keep your changes.');}
-function load(next,status){revision++;project=next;$('title').value=project.title;matrix();render();message(status);}
+function load(next,status){revision++;project=next;$('title').value=project.title;if($('scenario-question'))$('scenario-question').value='';if($('scenario-score'))$('scenario-score').value='3';matrix();render();message(status);}
 function uniqueName(base,items){let n=items.length+1;while(items.some(item=>item.name.toLowerCase()===(base+' '+n).toLowerCase()))n++;return base+' '+n;}
 $('title').addEventListener('input',()=>{project.title=$('title').value;changed();});
 $('matrix').addEventListener('input',event=>{

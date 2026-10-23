@@ -1,0 +1,10 @@
+import {mkdir,writeFile} from 'node:fs/promises';
+import {example} from '../src/example.mjs';
+import {analyze} from '../src/core.mjs';
+import {writeProject,scoreCsv,brief} from '../src/files.mjs';
+const p=example();await mkdir('examples',{recursive:true});
+await writeFile('examples/team-knowledge.json',writeProject(p));
+await writeFile('examples/ranges.json',JSON.stringify(analyze(p),null,2)+'\n');
+await writeFile('examples/inputs.csv',scoreCsv(p));
+await writeFile('examples/brief.md',brief(p));
+console.log('Wrote fictional scorecard, ranges, CSV and decision brief.');

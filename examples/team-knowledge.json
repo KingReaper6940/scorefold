@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "title": "Choose a home for team knowledge",
+  "criteria": [
+    {
+      "id": "setup",
+      "name": "Easy to set up",
+      "weight": 4
+    },
+    {
+      "id": "control",
+      "name": "Control over data",
+      "weight": 4
+    },
+    {
+      "id": "editing",
+      "name": "Editing experience",
+      "weight": 3
+    },
+    {
+      "id": "maintenance",
+      "name": "Low maintenance",
+      "weight": 2
+    }
+  ],
+  "options": [
+    {
+      "id": "wiki",
+      "name": "Open-source wiki",
+      "ratings": [
+        {
+          "criterionId": "setup",
+          "score": 2,
+          "note": "Needs an installation owner."
+        },
+        {
+          "criterionId": "control",
+          "score": 5,
+          "note": "Can run on our own server."
+        },
+        {
+          "criterionId": "editing",
+          "score": 3,
+          "note": "Try the editor with the team."
+        },
+        {
+          "criterionId": "maintenance",
+          "score": null,
+          "note": "Need an upkeep estimate."
+        }
+      ]
+    },
+    {
+      "id": "docs",
+      "name": "Shared documents",
+      "ratings": [
+        {
+          "criterionId": "setup",
+          "score": 5,
+          "note": "Workspace already available."
+        },
+        {
+          "criterionId": "control",
+          "score": 2,
+          "note": "Illustrative score; check policy."
+        },
+        {
+          "criterionId": "editing",
+          "score": 5,
+          "note": "Familiar editing workflow."
+        },
+        {
+          "criterionId": "maintenance",
+          "score": 5,
+          "note": "Managed service in this fictional example."
+        }
+      ]
+    },
+    {
+      "id": "portal",
+      "name": "Lightweight portal",
+      "ratings": [
+        {
+          "criterionId": "setup",
+          "score": 4,
+          "note": "Some setup required."
+        },
+        {
+          "criterionId": "control",
+          "score": null,
+          "note": "Need a data retention review."
+        },
+        {
+          "criterionId": "editing",
+          "score": 4,
+          "note": "Test with a contributor."
+        },
+        {
+          "criterionId": "maintenance",
+          "score": 4,
+          "note": "Ask about update ownership."
+        }
+      ]
+    }
+  ]
+}

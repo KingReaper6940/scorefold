@@ -1,0 +1,54 @@
+{
+  "title": "Choose a home for team knowledge",
+  "totalWeight": 13,
+  "options": [
+    {
+      "id": "wiki",
+      "name": "Open-source wiki",
+      "lower": 56.92307692307692,
+      "upper": 72.3076923076923,
+      "coverage": 84.61538461538461,
+      "unknownCount": 1,
+      "canLead": false
+    },
+    {
+      "id": "docs",
+      "name": "Shared documents",
+      "lower": 81.53846153846153,
+      "upper": 81.53846153846153,
+      "coverage": 100,
+      "unknownCount": 0,
+      "canLead": true
+    },
+    {
+      "id": "portal",
+      "name": "Lightweight portal",
+      "lower": 55.38461538461537,
+      "upper": 86.15384615384615,
+      "coverage": 69.23076923076923,
+      "unknownCount": 1,
+      "canLead": true
+    }
+  ],
+  "questions": [
+    {
+      "optionId": "portal",
+      "option": "Lightweight portal",
+      "criterionId": "control",
+      "criterion": "Control over data",
+      "swing": 30.76923076923077,
+      "note": "Need a data retention review."
+    },
+    {
+      "optionId": "wiki",
+      "option": "Open-source wiki",
+      "criterionId": "maintenance",
+      "criterion": "Low maintenance",
+      "swing": 15.384615384615385,
+      "note": "Need an upkeep estimate."
+    }
+  ],
+  "complete": false,
+  "clearLeaderId": null,
+  "tiedIds": []
+}

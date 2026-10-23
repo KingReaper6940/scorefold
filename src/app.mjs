@@ -114,6 +114,7 @@ $('open').addEventListener('change',async event=>{
   catch(error){if(token===revision)message('Project not opened: '+error.message,true);}
   finally{event.target.value='';}
 });
+installPasteImport();
 installScenario();
 load(project,'Example loaded. Ratings are illustrative, not claims about real products.');
 
@@ -148,4 +149,20 @@ function runScenario(){
     const scenario=simulateUnknown(project,optionId,criterionId,Number($('scenario-score').value));
     fillResults(scenario.analysis,$('scenario-verdict'),$('scenario-ranges'));$('scenario-outcome').hidden=false;
   }catch{ $('scenario-outcome').hidden=true; }
+}
+
+function installPasteImport(){
+  const toolbar=document.querySelector('.toolbar>.actions');
+  const toggle=el('button','quiet','Paste JSON');toggle.id='paste-toggle';toggle.setAttribute('aria-expanded','false');toolbar.append(toggle);
+  const panel=el('section','paste-panel');panel.id='paste-panel';panel.hidden=true;panel.setAttribute('aria-label','Open scorecard from JSON');
+  const label=el('label','','Saved scorecard JSON');const text=el('textarea');text.id='paste-source';text.maxLength=50000;text.spellcheck=false;text.setAttribute('aria-label','Saved scorecard JSON');label.append(text);
+  const actions=el('div','actions');const open=el('button','primary','Open pasted scorecard');open.id='paste-open';const cancel=el('button','quiet','Cancel');actions.append(open,cancel);panel.append(label,actions);
+  document.querySelector('.title-label').before(panel);
+  function close(){panel.hidden=true;text.value='';toggle.setAttribute('aria-expanded','false');}
+  toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden;toggle.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)text.focus();});
+  cancel.addEventListener('click',close);
+  open.addEventListener('click',()=>{
+    try{const next=readProject(text.value);load(next,'Pasted scorecard opened locally. Review the ratings and notes.');close();}
+    catch(error){message('Scorecard not opened: '+error.message,true);}
+  });
 }

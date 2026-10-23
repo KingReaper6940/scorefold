@@ -59,3 +59,24 @@ test('scenarios reject existing ratings, ignored criteria and invalid scores',()
   assert.throws(()=>simulateUnknown(p,'portal','control',6));
   p.criteria[1].weight=0;assert.throws(()=>simulateUnknown(p,'portal','control',3));
 });
+
+test('all completions of the two demo unknowns agree with possible-leader bounds',()=>{
+  const base=analyze(example()),possible=new Set();
+  for(let a=0;a<=5;a++)for(let b=0;b<=5;b++){
+    const p=example();p.options[0].ratings[3].score=a;p.options[2].ratings[1].score=b;
+    const done=analyze(p);const top=Math.max(...done.options.map(o=>o.lower));
+    for(const o of done.options){
+      const range=base.options.find(candidate=>candidate.id===o.id);
+      assert.ok(o.lower>=range.lower-1e-8&&o.lower<=range.upper+1e-8);
+      if(Math.abs(o.lower-top)<1e-8)possible.add(o.id);
+    }
+  }
+  assert.deepEqual(base.options.filter(o=>o.canLead).map(o=>o.id),[...possible].sort((a,b)=>base.options.findIndex(o=>o.id===a)-base.options.findIndex(o=>o.id===b)));
+});
+test('all maximum scores reach 100 and oversized option sets reject',()=>{
+  const p=example();for(const o of p.options)for(const r of o.ratings)r.score=5;
+  for(const o of analyze(p).options)near(o.lower,100);
+  p.options=Array.from({length:7},(_,i)=>({...p.options[0],id:'id'+i,name:'Option '+i}));
+  assert.throws(()=>validate(p),/2 to 6/);
+});
+

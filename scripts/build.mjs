@@ -1,0 +1,11 @@
+import {mkdir,copyFile,rm} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {dirname,resolve} from 'node:path';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),out=resolve(root,'dist');
+if(dirname(out)!==root)throw new Error('Unexpected build path.');
+const files=['index.html','style.css','favicon.svg','src/core.mjs','src/files.mjs','src/example.mjs','src/app.mjs'];
+for(const file of files.filter(f=>f.endsWith('.mjs')))execFileSync(process.execPath,['--check',resolve(root,file)]);
+await rm(out,{recursive:true,force:true});await mkdir(resolve(out,'src'),{recursive:true});
+for(const file of files)await copyFile(resolve(root,file),resolve(out,file));
+console.log('Built Scorefold in dist/');

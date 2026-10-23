@@ -64,3 +64,14 @@ export function analyze(input) {
   questions.sort((a,b)=>b.swing-a.swing);
   return {title:project.title,totalWeight,options,questions,complete,clearLeaderId:clearLeader?.id??null,tiedIds};
 }
+
+export function simulateUnknown(input,optionId,criterionId,score) {
+  const project=validate(input);
+  if(!Number.isInteger(score)||score<0||score>5)throw new Error('Assumed rating must be a whole number from 0 to 5.');
+  const option=project.options.find(o=>o.id===optionId),criterion=project.criteria.find(c=>c.id===criterionId);
+  const rating=option?.ratings.find(r=>r.criterionId===criterionId);
+  if(!rating||rating.score!==null||!criterion||criterion.weight===0)throw new Error('Choose an unanswered rating with a positive weight.');
+  rating.score=score;
+  return {assumption:{optionId,criterionId,score},analysis:analyze(project)};
+}
+

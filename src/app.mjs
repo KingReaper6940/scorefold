@@ -1,4 +1,4 @@
-import {analyze,MAX_OPTIONS,MAX_CRITERIA} from './core.mjs';
+import {analyze,simulateUnknown,MAX_OPTIONS,MAX_CRITERIA} from './core.mjs';
 import {readProject,writeProject,scoreCsv,brief} from './files.mjs';
 import {example} from './example.mjs';
 const $=id=>document.getElementById(id);
@@ -72,9 +72,9 @@ function render(){
     $('questions').replaceChildren();
     for(const q of report.questions){const li=el('li');li.append(el('h3','',q.option+' / '+q.criterion),el('p','swing','Up to '+pct(q.swing)+' points of range'));if(q.note)li.append(el('p','',q.note));$('questions').append(li);}
     if(!report.questions.length)$('questions').append(el('li','','No positive-weight unknown ratings remain.'));
-    $('save').disabled=false;$('download').disabled=false;preview();return true;
+    $('save').disabled=false;$('download').disabled=false;preview();syncScenario();return true;
   }catch(error){
-    report=null;$('verdict').replaceChildren(el('p','result-foot','Results unavailable until the inputs are valid.'));$('ranges').replaceChildren();$('questions').replaceChildren();$('preview').value='';$('save').disabled=true;$('download').disabled=true;message(error.message,true);return false;
+    report=null;$('verdict').replaceChildren(el('p','result-foot','Results unavailable until the inputs are valid.'));$('ranges').replaceChildren();$('questions').replaceChildren();$('preview').value='';$('save').disabled=true;$('download').disabled=true;message(error.message,true);syncScenario();return false;
   }
 }
 function changed(){revision++;if(render())message('Scorecard updated. Save a project to keep your changes.');}
@@ -114,4 +114,38 @@ $('open').addEventListener('change',async event=>{
   catch(error){if(token===revision)message('Project not opened: '+error.message,true);}
   finally{event.target.value='';}
 });
+installScenario();
 load(project,'Example loaded. Ratings are illustrative, not claims about real products.');
+
+function installScenario(){
+  const panel=el('div','scenario-panel');
+  const head=el('div','section-head');const title=el('div');title.append(el('p','eyebrow','04 / TRY AN ASSUMPTION'),el('h2','','What would change your mind?'));head.append(title);
+  const body=el('div','scenario-body');body.append(el('p','help','Test one unanswered rating. This does not change the scorecard and is not included in saved projects or exports.'));
+  const fields=el('div','scenario-fields');
+  const questionLabel=el('label','','Unanswered rating');const question=el('select');question.id='scenario-question';questionLabel.append(question);
+  const scoreLabel=el('label','','Assume a rating');const score=el('select');score.id='scenario-score';
+  for(let n=0;n<=5;n++){const option=el('option','',n+' / 5');option.value=String(n);score.append(option);}score.value='3';scoreLabel.append(score);
+  const reset=el('button','quiet','Clear assumption');reset.id='scenario-reset';fields.append(questionLabel,scoreLabel,reset);
+  const outcome=el('div');outcome.id='scenario-outcome';const verdict=el('div');verdict.id='scenario-verdict';const ranges=el('div');ranges.id='scenario-ranges';outcome.append(verdict,ranges);
+  body.append(fields,outcome);panel.append(head,body);$('scenario-slot').append(panel);
+  question.addEventListener('change',runScenario);score.addEventListener('change',runScenario);
+  reset.addEventListener('click',()=>{question.value='';runScenario();});
+}
+function syncScenario(){
+  const select=$('scenario-question'),previous=select.value;select.replaceChildren();
+  const none=el('option','','Choose a question');none.value='';select.append(none);
+  if(report)for(const q of report.questions){const option=el('option','',q.option+' / '+q.criterion);option.value=q.optionId+'|'+q.criterionId;select.append(option);}
+  select.value=[...select.options].some(o=>o.value===previous)?previous:'';
+  select.disabled=!report||report.questions.length===0;
+  $('scenario-score').disabled=select.disabled;
+  runScenario();
+}
+function runScenario(){
+  const selected=$('scenario-question').value;
+  if(!report||!selected){$('scenario-outcome').hidden=true;$('scenario-verdict').replaceChildren();$('scenario-ranges').replaceChildren();return;}
+  try{
+    const [optionId,criterionId]=selected.split('|');
+    const scenario=simulateUnknown(project,optionId,criterionId,Number($('scenario-score').value));
+    fillResults(scenario.analysis,$('scenario-verdict'),$('scenario-ranges'));$('scenario-outcome').hidden=false;
+  }catch{ $('scenario-outcome').hidden=true; }
+}

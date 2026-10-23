@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analyze,validate } from '../src/core.mjs';
+import { analyze,validate,simulateUnknown } from '../src/core.mjs';
 import { example } from '../src/example.mjs';
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
 test('example retains uncertainty and no premature clear leader',()=>{
@@ -43,4 +43,19 @@ test('rejects duplicate names/IDs, missing ratings and invalid weights/scores',(
 test('normalizes away arbitrary metadata',()=>{
   const p=example();p.privateMetadata='discard';p.options[0].ratings[0].extra='discard';
   const clean=validate(p);assert.equal('privateMetadata' in clean,false);assert.equal('extra' in clean.options[0].ratings[0],false);
+});
+
+test('isolated assumptions change only the scenario analysis',()=>{
+  const p=example(),before=structuredClone(p);
+  const low=simulateUnknown(p,'portal','control',0);
+  const high=simulateUnknown(p,'portal','control',5);
+  assert.equal(low.analysis.clearLeaderId,'docs');
+  assert.equal(high.analysis.clearLeaderId,'portal');
+  assert.deepEqual(p,before);assert.equal(analyze(p).clearLeaderId,null);
+});
+test('scenarios reject existing ratings, ignored criteria and invalid scores',()=>{
+  const p=example();
+  assert.throws(()=>simulateUnknown(p,'docs','control',3));
+  assert.throws(()=>simulateUnknown(p,'portal','control',6));
+  p.criteria[1].weight=0;assert.throws(()=>simulateUnknown(p,'portal','control',3));
 });

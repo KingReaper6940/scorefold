@@ -1,5 +1,7 @@
 # Scorefold
 
+[Open scorefold](https://scorefold.vercel.app)
+
 **Compare your options. Keep the unknowns.**
 
 A local weighted decision scorecard that leaves unanswered ratings as ranges. See which options could still lead, identify the missing information with the largest potential score swing, and try assumptions without changing your saved inputs.
@@ -146,6 +148,6 @@ Import the repository in your Vercel dashboard:
 | Output directory | `dist` |
 | Install command | Empty; no dependencies |
 
-`vercel.json` includes the build/output settings. No environment variables, database, paid APIs, or server functions are needed. No live deployment URL is advertised. Other static hosts work if they serve `.mjs` files as JavaScript.
+`vercel.json` includes the build/output settings. No environment variables, database, paid APIs, or server functions are needed. Other static hosts work if they serve `.mjs` files as JavaScript.
 
 MIT licensed. See [LICENSE](LICENSE).
